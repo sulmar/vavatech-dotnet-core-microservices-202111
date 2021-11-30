@@ -32,6 +32,7 @@ namespace CustomerService.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ICustomerRepositoryAsync, DbCustomerRepository>();
+            services.AddScoped<IMessageService, SendGridMessageService>();
 
             // dotnet add package Microsoft.EntityFrameworkCore.InMemory
             services.AddDbContext<CustomerContext>(options => options.UseInMemoryDatabase("CustomersInMemory"));

@@ -67,9 +67,11 @@ namespace CustomerService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Customer>> Add([FromBody] Customer customer)
+        public async Task<ActionResult<Customer>> Add([FromBody] Customer customer, [FromServices] IMessageService messageService)
         {
             await customerRepository.AddAsync(customer);
+
+            await messageService.SendAsync(customer);
 
             return CreatedAtRoute(new { id = customer.Id }, customer);
         }
