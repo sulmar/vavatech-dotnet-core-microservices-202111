@@ -1,6 +1,7 @@
 using Bogus;
 using CustomerService.Domain;
 using CustomerService.Intrastructure;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -49,6 +50,9 @@ namespace CustomerService.Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CustomerService.Api", Version = "v1" });
             });
+
+            // dotnet add package MediatR.Extensions.Microsoft.DependencyInjection
+            services.AddMediatR(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

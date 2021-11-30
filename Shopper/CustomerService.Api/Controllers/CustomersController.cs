@@ -1,4 +1,8 @@
-﻿using CustomerService.Domain;
+﻿using CustomerService.Api.Commands;
+using CustomerService.Api.Notifications;
+using CustomerService.Api.Queries;
+using CustomerService.Domain;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -40,25 +44,25 @@ namespace CustomerService.Api.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
-        private readonly ICustomerRepositoryAsync customerRepository;
+        private readonly IMediator mediator;
 
-        public CustomersController(ICustomerRepositoryAsync customerRepository)
+        public CustomersController(IMediator mediator)
         {
-            this.customerRepository = customerRepository;
+            this.mediator = mediator;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> Get()
         {
-            var customers = await customerRepository.GetAsync();
-            
+            var customers = await mediator.Send(new GetCustomersQuery());
+
             return Ok(customers);            
         }
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Customer>> Get(int id)
         {
-            var customer = await customerRepository.GetAsync(id);
+            var customer = await mediator.Send(new GetCustomerByIdQuery(id));
 
             if (customer == null)
                 return NotFound();
@@ -67,11 +71,11 @@ namespace CustomerService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Customer>> Add([FromBody] Customer customer, [FromServices] IMessageService messageService)
+        public async Task<ActionResult<Customer>> Add([FromBody] Customer customer)
         {
-            await customerRepository.AddAsync(customer);
+            await mediator.Send(new AddCustomerCommand(customer));
 
-            await messageService.SendAsync(customer);
+            await mediator.Publish(new CustomerAddedNotification(customer));
 
             return CreatedAtRoute(new { id = customer.Id }, customer);
         }
