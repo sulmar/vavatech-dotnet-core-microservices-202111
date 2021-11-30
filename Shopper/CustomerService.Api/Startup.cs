@@ -1,3 +1,4 @@
+using Bogus;
 using CustomerService.Domain;
 using CustomerService.Intrastructure;
 using Microsoft.AspNetCore.Builder;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
@@ -37,6 +39,9 @@ namespace CustomerService.Api
             // dotnet add package Microsoft.EntityFrameworkCore.SqlServer
             // services.AddDbContext<CustomerContext>(options => options.UseSqlServer(connectionString));
 
+            services.AddHealthChecks()
+                .AddCheck("Ping", () => HealthCheckResult.Healthy());
+
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -65,7 +70,17 @@ namespace CustomerService.Api
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CustomerService.Api v1"));                
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CustomerService.Api v1"));
+
+                // dotnet add package Bogus
+                var customers = new Faker<Customer>()
+                     .RuleFor(p => p.FirstName, f => f.Person.FirstName)
+                     .RuleFor(p => p.LastName, f => f.Person.LastName)
+                     .RuleFor(p => p.Email, f => f.Person.Email)
+                     .Generate(100);
+
+                context.Customers.AddRange(customers);
+                context.SaveChanges();
             }
 
             app.UseHttpsRedirection();
@@ -76,6 +91,7 @@ namespace CustomerService.Api
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/health");
                 endpoints.MapControllers();
             });
         }
