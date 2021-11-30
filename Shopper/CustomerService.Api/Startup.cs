@@ -1,7 +1,10 @@
+using CustomerService.Domain;
+using CustomerService.Intrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,6 +29,14 @@ namespace CustomerService.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<ICustomerRepositoryAsync, DbCustomerRepository>();
+
+            // dotnet add package Microsoft.EntityFrameworkCore.InMemory
+            services.AddDbContext<CustomerContext>(options => options.UseInMemoryDatabase("CustomersInMemory"));
+
+            // dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+            // services.AddDbContext<CustomerContext>(options => options.UseSqlServer(connectionString));
+
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -35,13 +46,26 @@ namespace CustomerService.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, CustomerContext context)
         {
+
+#if DEBUG
+            Console.WriteLine("XXXX");
+#endif
+
+            // ASPNETCORE_ENVIRONMENT
+            // if (env.EnvironmentName=="Blabla")
+
+            if (env.IsEnvironment("Blabla"))
+            {
+               
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CustomerService.Api v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CustomerService.Api v1"));                
             }
 
             app.UseHttpsRedirection();
