@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Core.Domain;
+using System;
 
 namespace CustomerService.Domain
 {
-    public class Customer
+    public class Customer : BaseEntity
     {
-        public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
