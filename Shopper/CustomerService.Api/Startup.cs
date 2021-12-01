@@ -35,6 +35,8 @@ namespace CustomerService.Api
             services.AddScoped<ICustomerRepositoryAsync, DbCustomerRepository>();
             services.AddScoped<IMessageService, SendGridMessageService>();
 
+            services.Configure<SendGridOptions>(Configuration.GetSection("SendGrid"));
+
             // dotnet add package Microsoft.EntityFrameworkCore.InMemory
             services.AddDbContext<CustomerContext>(options => options.UseInMemoryDatabase("CustomersInMemory"));
 
@@ -77,12 +79,21 @@ namespace CustomerService.Api
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CustomerService.Api v1"));
 
+                // int customerQuantity = int.Parse(Configuration["CustomerQuantity"]);
+
+                int customerQuantity = int.Parse(Configuration["Customers:Quantity"]);
+
+                string lifetime = Configuration["Logging:LogLevel:Microsoft.Hosting.Lifetime"];
+
+                // Pobranie obiektu na podstawie sekcji w konfiguracji
+                var customerOptions = Configuration.GetSection("Customers").Get<CustomerOptions>();              
+
                 // dotnet add package Bogus
                 var customers = new Faker<Customer>()
                      .RuleFor(p => p.FirstName, f => f.Person.FirstName)
                      .RuleFor(p => p.LastName, f => f.Person.LastName)
                      .RuleFor(p => p.Email, f => f.Person.Email)
-                     .Generate(100);
+                     .Generate(customerQuantity);
 
                 context.Customers.AddRange(customers);
                 context.SaveChanges();
