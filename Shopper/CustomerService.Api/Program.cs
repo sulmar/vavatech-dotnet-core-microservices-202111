@@ -16,11 +16,18 @@ namespace CustomerService.Api
         public static void Main(string[] args)
         {
             // dotnet add package Serilog.AspNetCore
+
+            // Uruchomienie Seq w konterze dockera
+            // docker run --name seq -d --restart unless-stopped -e ACCEPT_EULA=Y -p 5341:80 datalust/seq:latest
+            // dotnet add package Serilog.Sinks.Seq
+
+
             Log.Logger = new LoggerConfiguration()
                  .MinimumLevel.Debug()
                 .WriteTo.Console()
                 .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)                
                 .WriteTo.File(new CompactJsonFormatter(), "logs/log.json")
+                .WriteTo.Seq("http://localhost:5341")
                 .Enrich.WithEnvironmentName()
                 .Enrich.WithEnvironmentUserName()
                 .Enrich.WithMemoryUsage()
