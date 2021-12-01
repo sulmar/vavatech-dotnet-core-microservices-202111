@@ -1,4 +1,5 @@
 ﻿using CustomerService.Api.Commands;
+using CustomerService.Api.Filters;
 using CustomerService.Api.Notifications;
 using CustomerService.Api.Queries;
 using CustomerService.Domain;
@@ -97,22 +98,21 @@ namespace CustomerService.Api.Controllers
             return NoContent();
         }
 
-        // PATCH /customers/10 { "LastName":"" }
-
+        // PATCH /customers/10 { "LastName":"Kowalski", "Age": null }
+        // https://www.rfc-editor.org/rfc/rfc6902
         // http://jsonpatch.com/
 
         // dotnet add package Microsoft.AspNetCore.JsonPatch
         // Content-Type: application/json-patch+json
         // .AddNewtonsoftJson()
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id}")]    
+        [ContentTypeFilter("application/json-patch+json")]
         public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<Customer> patchCustomer)
         {
             await mediator.Send(new PatchCustomerCommand(id, patchCustomer));
 
             return NoContent();
         }
-
-
     }
 }
