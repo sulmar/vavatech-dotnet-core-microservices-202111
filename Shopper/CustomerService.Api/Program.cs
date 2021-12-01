@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Formatting.Compact;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +15,32 @@ namespace CustomerService.Api
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            // dotnet add package Serilog.AspNetCore
+            Log.Logger = new LoggerConfiguration()
+                 .MinimumLevel.Debug()
+                .WriteTo.Console()
+                .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)                
+                .WriteTo.File(new CompactJsonFormatter(), "logs/log.json")
+                .Enrich.WithEnvironmentName()
+                .Enrich.WithEnvironmentUserName()
+                .Enrich.WithMemoryUsage()
+                .CreateLogger();
+
+            try
+            {
+                Log.Information("Application starting...");
+
+                CreateHostBuilder(args).Build().Run();
+            }
+
+            catch(Exception e)
+            {
+                Log.Fatal(e, "Application failed to start.");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -30,6 +57,7 @@ namespace CustomerService.Api
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                });
+                })
+                .UseSerilog();
     }
 }

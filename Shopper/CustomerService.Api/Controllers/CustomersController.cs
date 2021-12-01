@@ -6,6 +6,7 @@ using CustomerService.Domain;
 using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,10 +48,12 @@ namespace CustomerService.Api.Controllers
     public class CustomersController : ControllerBase
     {
         private readonly IMediator mediator;
+        private readonly ILogger<CustomersController> logger;
 
-        public CustomersController(IMediator mediator)
+        public CustomersController(IMediator mediator, ILogger<CustomersController> logger)
         {
             this.mediator = mediator;
+            this.logger = logger;
         }
 
         [HttpGet]
@@ -110,6 +113,8 @@ namespace CustomerService.Api.Controllers
         [ContentTypeFilter("application/json-patch+json")]
         public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<Customer> patchCustomer)
         {
+            logger.LogInformation("Patch Customer Id = {0}", id);
+
             await mediator.Send(new PatchCustomerCommand(id, patchCustomer));
 
             return NoContent();

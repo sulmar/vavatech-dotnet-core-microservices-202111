@@ -38,10 +38,22 @@ namespace CustomerService.Api
             services.Configure<SendGridOptions>(Configuration.GetSection("SendGrid"));
 
             // dotnet add package Microsoft.EntityFrameworkCore.InMemory
-            services.AddDbContext<CustomerContext>(options => options.UseInMemoryDatabase("CustomersInMemory"));
+            //services.AddDbContext<CustomerContext>(options =>
+            //{
+            //    options.UseInMemoryDatabase("CustomersInMemory");
+            //    options.EnableSensitiveDataLogging();
+            //});
+
+            string connectionString = Configuration.GetConnectionString("CustomerConnectionString");
 
             // dotnet add package Microsoft.EntityFrameworkCore.SqlServer
-            // services.AddDbContext<CustomerContext>(options => options.UseSqlServer(connectionString));
+            services.AddDbContext<CustomerContext>(options =>
+            {
+                options.UseSqlServer(connectionString);
+               
+                options.EnableSensitiveDataLogging(bool.Parse(Configuration["EnableSensitiveDataLogging"]));
+               
+            });
 
             services.AddHealthChecks()
                 .AddCheck("Ping", () => HealthCheckResult.Healthy());
@@ -63,6 +75,8 @@ namespace CustomerService.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, CustomerContext context)
         {
+
+            context.Database.EnsureCreated();
 
 #if DEBUG
             Console.WriteLine("XXXX");
@@ -89,17 +103,20 @@ namespace CustomerService.Api
                 string lifetime = Configuration["Logging:LogLevel:Microsoft.Hosting.Lifetime"];
 
                 // Pobranie obiektu na podstawie sekcji w konfiguracji
-                var customerOptions = Configuration.GetSection("Customers").Get<CustomerOptions>();              
+                var customerOptions = Configuration.GetSection("Customers").Get<CustomerOptions>();
 
-                // dotnet add package Bogus
-                var customers = new Faker<Customer>()
-                     .RuleFor(p => p.FirstName, f => f.Person.FirstName)
-                     .RuleFor(p => p.LastName, f => f.Person.LastName)
-                     .RuleFor(p => p.Email, f => f.Person.Email)
-                     .Generate(customerQuantity);
+                if (!context.Customers.Any())
+                {
+                    // dotnet add package Bogus
+                    var customers = new Faker<Customer>()
+                         .RuleFor(p => p.FirstName, f => f.Person.FirstName)
+                         .RuleFor(p => p.LastName, f => f.Person.LastName)
+                         .RuleFor(p => p.Email, f => f.Person.Email)
+                         .Generate(customerQuantity);
 
-                context.Customers.AddRange(customers);
-                context.SaveChanges();
+                    context.Customers.AddRange(customers);
+                    context.SaveChanges();
+                }
             }
 
             // app.UseHttpsRedirection();
