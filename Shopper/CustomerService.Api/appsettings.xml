@@ -1,0 +1,6 @@
+﻿<Configuration>
+	<Customers>
+		<Quantity>200</Quantity>
+		<DefaultName>xyz</DefaultName>
+	</Customers>
+</Configuration>
