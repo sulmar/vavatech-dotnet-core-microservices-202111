@@ -41,16 +41,12 @@ namespace DocumentService.Api
             }
 
             app.UseHangfireDashboard(); // http://localhost:5040/hangfire
-            app.UseHangfireServer();
 
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello Document Api!");
-                });
+                endpoints.Redirect("/", "hangfire");                
 
                 endpoints.MapPost("/documents", async context =>
                 {

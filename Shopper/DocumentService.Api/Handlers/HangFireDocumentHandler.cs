@@ -13,10 +13,12 @@ namespace DocumentService.Api.Handlers
     public class HangFireDocumentHandler : INotificationHandler<CreateDocumentNotification>
     {
         private readonly IDocumentService documentService;
+        private readonly IBackgroundJobClient jobClient;
 
-        public HangFireDocumentHandler(IDocumentService documentService)
+        public HangFireDocumentHandler(IDocumentService documentService, IBackgroundJobClient jobClient)
         {
             this.documentService = documentService;
+            this.jobClient = jobClient;
         }
 
         public Task Handle(CreateDocumentNotification notification, CancellationToken cancellationToken)
@@ -24,7 +26,11 @@ namespace DocumentService.Api.Handlers
             // dotnet add package HangFire.AspNetCore
             // BackgroundJob.Enqueue(() => Console.WriteLine("Fire-and-forgot"));
 
-            BackgroundJob.Enqueue(()=>documentService.Create(notification.customer));
+            // Uwaga: nietestowalne
+            // BackgroundJob.Enqueue(()=>documentService.Create(notification.customer));
+
+                        
+            jobClient.Enqueue(() => documentService.Create(notification.customer));
             
             return Task.CompletedTask;
         }
