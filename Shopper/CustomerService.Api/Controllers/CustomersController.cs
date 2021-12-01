@@ -3,6 +3,7 @@ using CustomerService.Api.Notifications;
 using CustomerService.Api.Queries;
 using CustomerService.Domain;
 using MediatR;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -80,6 +81,38 @@ namespace CustomerService.Api.Controllers
             return CreatedAtRoute(new { id = customer.Id }, customer);
         }
 
-        
+
+        // PUT /customers/10 { "Id": 11, "FirstName":"", "LastName":"" }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> Put(int id, [FromBody] Customer customer)
+        {
+            if (id != customer.Id)
+            {
+                return BadRequest();
+            }
+
+            await mediator.Send(new UpdateCustomerCommand(customer));
+
+            return NoContent();
+        }
+
+        // PATCH /customers/10 { "LastName":"" }
+
+        // http://jsonpatch.com/
+
+        // dotnet add package Microsoft.AspNetCore.JsonPatch
+        // Content-Type: application/json-patch+json
+        // .AddNewtonsoftJson()
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<Customer> patchCustomer)
+        {
+            await mediator.Send(new PatchCustomerCommand(id, patchCustomer));
+
+            return NoContent();
+        }
+
+
     }
 }

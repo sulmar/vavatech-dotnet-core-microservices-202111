@@ -1,4 +1,5 @@
 ﻿using CustomerService.Domain;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,21 @@ namespace CustomerService.Intrastructure
         public async Task<Customer> GetAsync(int id)
         {
             return await context.Customers.FindAsync(id);
+        }
+
+        public async Task PatchAsync(int customerId, JsonPatchDocument<Customer> patchCustomer)
+        {
+            Customer customer = await GetAsync(customerId);
+
+            patchCustomer.ApplyTo(customer);
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(Customer customer)
+        {
+            context.Customers.Update(customer);
+            await context.SaveChangesAsync();            
         }
     }
 }

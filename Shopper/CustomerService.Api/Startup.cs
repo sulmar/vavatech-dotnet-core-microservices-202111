@@ -46,8 +46,11 @@ namespace CustomerService.Api
             services.AddHealthChecks()
                 .AddCheck("Ping", () => HealthCheckResult.Healthy());
 
+            // dotnet add package Microsoft.AspNetCore.Mvc.NewtonsoftJson
+            services.AddControllers()
+                .AddNewtonsoftJson();
 
-            services.AddControllers();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CustomerService.Api", Version = "v1" });
@@ -99,7 +102,7 @@ namespace CustomerService.Api
                 context.SaveChanges();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
 
