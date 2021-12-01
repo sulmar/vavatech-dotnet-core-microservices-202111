@@ -24,7 +24,8 @@ namespace CustomerService.Api
 
                     config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
                     config.AddXmlFile("appsettings.xml", optional: true); 
-                    config.AddJsonFile($"appsettings.{environmentName}.json", optional: true);                                       
+                    config.AddJsonFile($"appsettings.{environmentName}.json", optional: true);
+                    config.AddUserSecrets<Program>();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
