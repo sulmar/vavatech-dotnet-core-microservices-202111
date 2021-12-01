@@ -1,15 +1,18 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ProductService.Api.Middlewares;
 using ProductService.Domain;
+using ProductService.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace ProductService.Api
@@ -18,7 +21,10 @@ namespace ProductService.Api
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            
+            services.AddScoped<IProductRepository, DbProductRepository>();
+
+            // dotnet add package Microsoft.EntityFrameworkCore.InMemory
+            services.AddDbContextPool<ProductContext>(options => options.UseInMemoryDatabase("ProductsInMemory"), poolSize: 3);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
@@ -82,22 +88,40 @@ namespace ProductService.Api
                 endpoints.MapGet("/",
                     async context => await context.Response.WriteAsync("Hello World!"));
 
-                endpoints.MapGet("/api/products", 
-                    async context => await context.Response.WriteAsync("Products!"));
+                endpoints.MapGet("/api/products",
+                    async context =>
+                    {
+                        IProductRepository productRepository = (IProductRepository)context.RequestServices.GetRequiredService(typeof(IProductRepository));
+
+                        var products = await productRepository.Get();
+
+                        await context.Response.WriteAsJsonAsync(products);
+                    }
+                    );
 
                 endpoints.MapGet("/api/products/{id:int}",
                     async context =>
                     {
-                        IProductRepository productRepository = (IProductRepository) context.RequestServices.GetRequiredService(typeof(IProductRepository));
+                        IProductRepository productRepository = (IProductRepository)context.RequestServices.GetRequiredService(typeof(IProductRepository));
 
-                        var id = context.Request.RouteValues["id"];
+                        var id = Convert.ToInt32(context.Request.RouteValues["id"]);
 
-                        Product product = new Product { Id = 10, Name = "My product", BarCode = "1245" };
-
-                        // await context.Response.WriteAsync($"Product {id}!");
+                        Product product = await productRepository.Get(id);
 
                         await context.Response.WriteAsJsonAsync(product);
                     });
+
+                endpoints.MapPost("/api/products", async context =>
+                {
+                    IProductRepository productRepository = (IProductRepository)context.RequestServices.GetRequiredService(typeof(IProductRepository));
+
+                    var product = await context.Request.ReadFromJsonAsync<Product>();
+
+                    await productRepository.Add(product);
+
+                    context.Response.StatusCode = (int) HttpStatusCode.Created;                    
+
+                });
 
             });
 
