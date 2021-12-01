@@ -80,8 +80,16 @@ namespace ProductService.Api
             // Logic Middleware
             // app.Run(context => context.Response.WriteAsync("Hello World!"));
 
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
             // Routing Middleware
             app.UseRouting();
+
+            // Route-To-Code
 
             app.UseEndpoints(endpoints =>
             {
@@ -117,10 +125,30 @@ namespace ProductService.Api
 
                     var product = await context.Request.ReadFromJsonAsync<Product>();
 
+                    throw new NotImplementedException();
+
                     await productRepository.Add(product);
 
                     context.Response.StatusCode = (int) HttpStatusCode.Created;                    
 
+                });
+
+                endpoints.MapMethods("/api/products/{id:int}", new[] { "HEAD" }, async context =>
+                {
+                    IProductRepository productRepository = (IProductRepository)context.RequestServices.GetRequiredService(typeof(IProductRepository));
+
+                    var id = Convert.ToInt32(context.Request.RouteValues["id"]);
+
+                    Product product = await productRepository.Get(id);
+
+                    if (product==null)
+                    {
+                        context.Response.StatusCode = (int) HttpStatusCode.NotFound;
+                    }
+                    else
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.OK;
+                    }
                 });
 
             });

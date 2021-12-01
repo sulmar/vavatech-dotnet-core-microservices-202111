@@ -20,5 +20,6 @@ namespace Domain
         Task<IEnumerable<T>> Get();
         Task<T> Get(TKey id);
         Task Add(T entity);
+
     }
 }
