@@ -35,6 +35,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentService.Infrastruct
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentService.Api", "DocumentService.Api\DocumentService.Api.csproj", "{41C29086-EE07-493D-93F6-471E65DFF790}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GatewayService", "GatewayService", "{3BB8289A-D422-4667-BD9C-616617429ACE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GatewayService.Api", "GatewayService.Api\GatewayService.Api.csproj", "{683E8B32-6AC6-4F8E-A9BC-4C8B1D2E47D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +89,10 @@ Global
 		{41C29086-EE07-493D-93F6-471E65DFF790}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41C29086-EE07-493D-93F6-471E65DFF790}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41C29086-EE07-493D-93F6-471E65DFF790}.Release|Any CPU.Build.0 = Release|Any CPU
+		{683E8B32-6AC6-4F8E-A9BC-4C8B1D2E47D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{683E8B32-6AC6-4F8E-A9BC-4C8B1D2E47D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{683E8B32-6AC6-4F8E-A9BC-4C8B1D2E47D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{683E8B32-6AC6-4F8E-A9BC-4C8B1D2E47D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,6 +112,8 @@ Global
 		{4A0A2FDC-D71C-4B0B-9C46-4387DB89FCA2} = {87D6587C-9FFE-4F6D-B211-E7D7B9431C62}
 		{7FB89392-6F8C-4AA9-A5A7-95304FA6E1AB} = {87D6587C-9FFE-4F6D-B211-E7D7B9431C62}
 		{41C29086-EE07-493D-93F6-471E65DFF790} = {87D6587C-9FFE-4F6D-B211-E7D7B9431C62}
+		{3BB8289A-D422-4667-BD9C-616617429ACE} = {3A805B6A-040F-461B-9C63-E34469106EE8}
+		{683E8B32-6AC6-4F8E-A9BC-4C8B1D2E47D0} = {3BB8289A-D422-4667-BD9C-616617429ACE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0484696F-AC0E-41C9-8FF8-6055E59DD9A4}

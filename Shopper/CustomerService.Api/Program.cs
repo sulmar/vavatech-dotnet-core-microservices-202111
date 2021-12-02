@@ -60,6 +60,7 @@ namespace CustomerService.Api
                     config.AddXmlFile("appsettings.xml", optional: true); 
                     config.AddJsonFile($"appsettings.{environmentName}.json", optional: true);
                     config.AddUserSecrets<Program>();
+                    config.AddCommandLine(args);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

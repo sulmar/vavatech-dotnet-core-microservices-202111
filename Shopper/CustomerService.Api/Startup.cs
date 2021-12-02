@@ -73,7 +73,7 @@ namespace CustomerService.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, CustomerContext context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, CustomerContext context, ILogger<Startup> logger)
         {
 
             context.Database.EnsureCreated();
@@ -124,6 +124,26 @@ namespace CustomerService.Api
             app.UseRouting();
 
             app.UseAuthorization();
+
+            string instance = Configuration["instance"];
+
+            logger.LogInformation("Instance {0}", instance);
+
+            // dotnet run --instance InstanceA --urls "http://localhost:5010;https://localhost:5011"
+            // dotnet run --instance InstanceB --urls "http://localhost:5012;https://localhost:5013"
+
+            // Dodawanie w³asnych nag³ówków do odpowiedzi
+            app.Use(async (context, next) =>
+            {
+                context.Response.OnStarting(() =>
+                {
+                    context.Response.Headers.Add("X-Instance", instance);
+
+                    return Task.CompletedTask;
+                });
+
+                await next();
+            });
             
             app.UseEndpoints(endpoints =>
             {
