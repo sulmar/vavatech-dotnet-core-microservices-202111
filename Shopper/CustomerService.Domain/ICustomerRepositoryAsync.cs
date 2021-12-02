@@ -11,5 +11,6 @@ namespace CustomerService.Domain
         Task AddAsync(Customer customer);
         Task UpdateAsync(Customer customer);
         Task PatchAsync(int customerId, JsonPatchDocument<Customer> patchCustomer);
+        Task<bool> ExistsAsync(string pesel);
     }
 }

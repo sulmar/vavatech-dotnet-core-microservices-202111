@@ -9,6 +9,7 @@ namespace CustomerService.Domain
     {
         IEnumerable<Customer> Get();
         Customer Get(int id);
-        void Add(Customer customer);        
+        void Add(Customer customer);
+        bool Exists(string pesel);
     }
 }

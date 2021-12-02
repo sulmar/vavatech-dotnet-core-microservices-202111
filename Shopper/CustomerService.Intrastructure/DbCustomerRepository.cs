@@ -22,6 +22,11 @@ namespace CustomerService.Intrastructure
             await context.SaveChangesAsync();
         }
 
+        public async Task<bool> ExistsAsync(string pesel)
+        {
+            return await context.Customers.AnyAsync(p => p.Pesel == pesel);
+        }
+
         public async Task<IEnumerable<Customer>> GetAsync()
         {
             return await context.Customers.AsNoTracking().ToListAsync();

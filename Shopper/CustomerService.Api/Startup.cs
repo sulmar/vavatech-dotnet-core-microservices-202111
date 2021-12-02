@@ -1,6 +1,7 @@
 using Bogus;
 using CustomerService.Domain;
 using CustomerService.Intrastructure;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Bogus.Extensions.Poland;
 
 namespace CustomerService.Api
 {
@@ -58,9 +60,12 @@ namespace CustomerService.Api
             services.AddHealthChecks()
                 .AddCheck("Ping", () => HealthCheckResult.Healthy());
 
-            // dotnet add package Microsoft.AspNetCore.Mvc.NewtonsoftJson
+            
             services.AddControllers()
-                .AddNewtonsoftJson();
+                .AddNewtonsoftJson()     // dotnet add package Microsoft.AspNetCore.Mvc.NewtonsoftJson
+                .AddFluentValidation(options=>options.RegisterValidatorsFromAssemblyContaining<Domain.Customer>());  // dotnet add package FluentValidation.AspNetCore
+
+
 
 
             services.AddSwaggerGen(c =>
@@ -70,6 +75,8 @@ namespace CustomerService.Api
 
             // dotnet add package MediatR.Extensions.Microsoft.DependencyInjection
             services.AddMediatR(typeof(Startup));
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -112,6 +119,7 @@ namespace CustomerService.Api
                          .RuleFor(p => p.FirstName, f => f.Person.FirstName)
                          .RuleFor(p => p.LastName, f => f.Person.LastName)
                          .RuleFor(p => p.Email, f => f.Person.Email)
+                         .RuleFor(p=>p.Pesel, f=>f.Person.Pesel())
                          .Generate(customerQuantity);
 
                     context.Customers.AddRange(customers);

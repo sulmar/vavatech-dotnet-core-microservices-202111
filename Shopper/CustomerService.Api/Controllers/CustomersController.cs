@@ -44,7 +44,7 @@ namespace CustomerService.Api.Controllers
     }
 
     [Route("[controller]")]    
-    [ApiController]
+    // [ApiController]
     public class CustomersController : ControllerBase
     {
         private readonly IMediator mediator;
@@ -77,7 +77,14 @@ namespace CustomerService.Api.Controllers
 
         [HttpPost]
         public async Task<ActionResult<Customer>> Add([FromBody] Customer customer)
-        {
+        {            
+           // ModelState.AddModelError("Pesel", "Taki pesel już istnieje.");
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             await mediator.Send(new AddCustomerCommand(customer));
 
             await mediator.Publish(new CustomerAddedNotification(customer));
