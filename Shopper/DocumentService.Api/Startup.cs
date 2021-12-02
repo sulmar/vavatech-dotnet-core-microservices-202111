@@ -46,7 +46,11 @@ namespace DocumentService.Api
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.Redirect("/", "hangfire");                
+                // Przekierowanie 
+                // endpoints.MapGet("/", async context => context.Response.Redirect("hangfire"));
+
+                // Przekierowanie z u¿yciem w³asnej metody rozszerzaj¹cej
+                endpoints.Redirect("/", "hangfire");
 
                 endpoints.MapPost("/documents", async context =>
                 {
