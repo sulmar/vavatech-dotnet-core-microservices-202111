@@ -4,6 +4,7 @@ using CustomerService.Api.Notifications;
 using CustomerService.Api.Queries;
 using CustomerService.Domain;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -38,11 +39,13 @@ namespace CustomerService.Api.Controllers
     // Unauthorized - niezalogowany użytkownik - 401
     // Forbid - nie masz praw dostępu do tego zasobu - 403
 
+    //[Authorize(Roles = "Trainer, Member")]
     [Route("v1/[controller]")]
     public class CustomersControllerV1 : ControllerBase
     {
     }
 
+  
     [Route("[controller]")]    
     // [ApiController]
     public class CustomersController : ControllerBase
@@ -57,11 +60,21 @@ namespace CustomerService.Api.Controllers
         }
 
         [HttpGet]
+      //  [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Customer>>> Get()
         {
+            //if (!this.User.Identity.IsAuthenticated)
+            //{
+            //    return Unauthorized();
+            //}
+
+            
             var customers = await mediator.Send(new GetCustomersQuery());
 
-            return Ok(customers);            
+            return Ok(customers);
+
+            
+                   
         }
 
         [HttpGet("{id:int}")]
