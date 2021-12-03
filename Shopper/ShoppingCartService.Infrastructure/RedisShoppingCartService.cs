@@ -21,6 +21,8 @@ namespace ShoppingCartService.Infrastructure
 
             RedisKey key = $"cart:{shoppingCartId}:{detail.ProductId}";
 
+            // db.Execute("SAVE");
+
             if (await db.KeyExistsAsync(key))
             {
                 await db.HashIncrementAsync(key, "Quantity", detail.Quantity);
