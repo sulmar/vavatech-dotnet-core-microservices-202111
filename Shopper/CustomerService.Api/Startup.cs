@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bogus.Extensions.Poland;
+using CustomerService.Api.Pipelines;
 
 namespace CustomerService.Api
 {
@@ -76,7 +77,10 @@ namespace CustomerService.Api
             // dotnet add package MediatR.Extensions.Microsoft.DependencyInjection
             services.AddMediatR(typeof(Startup));
 
-            
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehaviour<,>));
+
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
