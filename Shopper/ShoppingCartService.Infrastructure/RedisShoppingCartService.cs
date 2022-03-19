@@ -29,15 +29,17 @@ namespace ShoppingCartService.Infrastructure
             }
             else
             {
-                HashEntry[] entries = new HashEntry[] 
-                {
-                    new ("Quantity", detail.Quantity.ToString()),
-                    new ("UnitPrice", detail.UnitPrice.ToString()),
-                };
+                HashEntry[] entries = Map(detail);
 
                 await db.HashSetAsync(key, entries);
             }
         }
+
+        private static HashEntry[] Map(Detail detail) => new HashEntry[]
+        {
+            new (nameof(Detail.Quantity), detail.Quantity.ToString()),
+            new (nameof(Detail.UnitPrice), detail.UnitPrice.ToString()),
+        };
 
         public async Task Remove(Guid shoppingCartId, int productId)
         {
@@ -45,13 +47,13 @@ namespace ShoppingCartService.Infrastructure
 
             var quantity = int.Parse(db.HashGet(key, "Quantity"));
 
-            if (quantity==1)
+            if (quantity == 1)
             {
                 await db.KeyDeleteAsync(key);
             }
             else
             {
-                await db.HashIncrementAsync(key, "Quantity", - 1);
+                await db.HashIncrementAsync(key, "Quantity", -1);
             }
         }
     }
