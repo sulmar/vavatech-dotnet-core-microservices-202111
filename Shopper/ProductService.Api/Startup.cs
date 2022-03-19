@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Extensions;
 
 namespace ProductService.Api
 {
@@ -133,7 +134,7 @@ namespace ProductService.Api
 
                 });
 
-                endpoints.MapMethods("/api/products/{id:int}", new[] { "HEAD" }, async context =>
+                endpoints.MapHead("/api/products/{id:int}", async context =>
                 {
                     IProductRepository productRepository = (IProductRepository)context.RequestServices.GetRequiredService(typeof(IProductRepository));
 
